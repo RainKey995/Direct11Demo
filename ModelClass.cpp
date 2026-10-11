@@ -16,7 +16,7 @@ ModelClass::~ModelClass()
 {
 }
 
-bool ModelClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, char* modelFilename, char* textureFilename1)
+bool ModelClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, char* modelFilename, char* textureFilename)
 {
 	bool result;
 
@@ -34,7 +34,7 @@ bool ModelClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCon
 		return false;
 	}
 
-	result = LoadTexture(device, deviceContext, textureFilename1);
+	result = LoadTexture(device, deviceContext, textureFilename);
 	if (!result)
 	{
 		return false;

@@ -96,6 +96,12 @@
     <ClInclude Include="FrustumClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RenderTextureClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DisplayPlaneClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputClass.cpp">
@@ -180,6 +186,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FrustumClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTextureClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DisplayPlaneClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

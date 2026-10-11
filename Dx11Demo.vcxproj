@@ -42,7 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -137,6 +137,7 @@
     <ClInclude Include="CameraClass.h" />
     <ClInclude Include="ColorShaderClass.h" />
     <ClInclude Include="D3DClass.h" />
+    <ClInclude Include="DisplayPlaneClass.h" />
     <ClInclude Include="FontClass.h" />
     <ClInclude Include="FontShaderClass.h" />
     <ClInclude Include="FpsClass.h" />
@@ -150,6 +151,7 @@
     <ClInclude Include="MultiTextureShaderClass.h" />
     <ClInclude Include="NormalMapShaderClass.h" />
     <ClInclude Include="PositionClass.h" />
+    <ClInclude Include="RenderTextureClass.h" />
     <ClInclude Include="ShaderManagerClass.h" />
     <ClInclude Include="SpecMapShaderClass.h" />
     <ClInclude Include="SpriteClass.h" />
@@ -166,6 +168,7 @@
     <ClCompile Include="CameraClass.cpp" />
     <ClCompile Include="ColorShaderClass.cpp" />
     <ClCompile Include="D3DClass.cpp" />
+    <ClCompile Include="DisplayPlaneClass.cpp" />
     <ClCompile Include="FontClass.cpp" />
     <ClCompile Include="FontShaderClass.cpp" />
     <ClCompile Include="FpsClass.cpp" />
@@ -180,6 +183,7 @@
     <ClCompile Include="MultiTextureShaderClass.cpp" />
     <ClCompile Include="NormalMapShaderClass.cpp" />
     <ClCompile Include="PositionClass.cpp" />
+    <ClCompile Include="RenderTextureClass.cpp" />
     <ClCompile Include="ShaderManagerClass.cpp" />
     <ClCompile Include="SpecMapShaderClass.cpp" />
     <ClCompile Include="SpriteClass.cpp" />
