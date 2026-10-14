@@ -138,6 +138,7 @@
     <ClInclude Include="ColorShaderClass.h" />
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="DisplayPlaneClass.h" />
+    <ClInclude Include="FogShaderClass.h" />
     <ClInclude Include="FontClass.h" />
     <ClInclude Include="FontShaderClass.h" />
     <ClInclude Include="FpsClass.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="ColorShaderClass.cpp" />
     <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="DisplayPlaneClass.cpp" />
+    <ClCompile Include="FogShaderClass.cpp" />
     <ClCompile Include="FontClass.cpp" />
     <ClCompile Include="FontShaderClass.cpp" />
     <ClCompile Include="FpsClass.cpp" />
@@ -198,6 +200,8 @@
     <None Include="..\Engine\alphamap.vs" />
     <None Include="..\Engine\color.ps" />
     <None Include="..\Engine\color.vs" />
+    <None Include="..\Engine\fog.ps" />
+    <None Include="..\Engine\fog.vs" />
     <None Include="..\Engine\font.ps" />
     <None Include="..\Engine\font.vs" />
     <None Include="..\Engine\light.ps" />

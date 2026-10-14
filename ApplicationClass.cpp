@@ -6,9 +6,7 @@ ApplicationClass::ApplicationClass()
     m_Direct3D = 0;
     m_Camera = 0;
     m_Model = 0;
-    m_TextureShader = 0;
-    m_RenderTexture = 0;
-    m_DisplayPlane = 0;
+    m_FogShader = 0;
 }
 
 ApplicationClass::ApplicationClass(const ApplicationClass& other)
@@ -53,28 +51,12 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
-    m_TextureShader = new TextureShaderClass;
+    m_FogShader = new FogShaderClass;
 
-    result = m_TextureShader->Initialize(m_Direct3D->GetDevice(), hwnd);
+    result = m_FogShader->Initialize(m_Direct3D->GetDevice(), hwnd);
     if (!result)
     {
-        MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
-        return false;
-    }
-
-    m_RenderTexture = new RenderTextureClass;
-
-    result = m_RenderTexture->Initialize(m_Direct3D->GetDevice(), 256, 256, SCREEN_DEPTH, SCREEN_NEAR, 1);
-    if (!result)
-    {
-        return false;
-    }
-
-    m_DisplayPlane = new DisplayPlaneClass;
-
-    result = m_DisplayPlane->Initialize(m_Direct3D->GetDevice(), 1.0f, 1.0f);
-    if (!result)
-    {
+        MessageBox(hwnd, L"Could not initialize the fog shader object.", L"Error", MB_OK);
         return false;
     }
 
@@ -83,25 +65,11 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 void ApplicationClass::Shutdown()
 {
-    if (m_DisplayPlane)
+    if (m_FogShader)
     {
-        m_DisplayPlane->Shutdown();
-        delete m_DisplayPlane;
-        m_DisplayPlane = 0;
-    }
-
-    if (m_RenderTexture)
-    {
-        m_RenderTexture->Shutdown();
-        delete m_RenderTexture;
-        m_RenderTexture = 0;
-    }
-
-    if (m_TextureShader)
-    {
-        m_TextureShader->Shutdown();
-        delete m_TextureShader;
-        m_TextureShader = 0;
+        m_FogShader->Shutdown();
+        delete m_FogShader;
+        m_FogShader = 0;
     }
 
     if (m_Model)
@@ -129,7 +97,7 @@ void ApplicationClass::Shutdown()
 
 bool ApplicationClass::Frame(InputClass* input)
 {
-    static float rotation;
+    static float rotation = 0.0f;
     bool result;
 
     if (input->IsEscapePressed())
@@ -143,13 +111,14 @@ bool ApplicationClass::Frame(InputClass* input)
         rotation += 360.0f;
     }
 
-    result = RenderSceneToTexture(rotation);
-    if (!result)
-    {
-        return false;
-    }
+    static float distance = 0.0f;
+    distance += 0.01f;
+    float z = -10.0f * abs(sin(distance));
 
-    result = Render();
+    m_Camera->SetPosition(0.0f, 0.0f, z);
+    m_Camera->Render();
+
+    result = Render(rotation);
     if (!result)
     {
         return false;
@@ -158,82 +127,33 @@ bool ApplicationClass::Frame(InputClass* input)
     return true;
 }
 
-bool ApplicationClass::Render()
+bool ApplicationClass::Render(float rotation)
 {
     XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
+    float fogColor, fogStart, fogEnd;
     bool result;
 
-    m_Direct3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
+    fogColor = 0.5f;
+    fogStart = 0.0f;
+    fogEnd = 10.0f;
 
-    m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
-    m_Camera->Render();
+    m_Direct3D->BeginScene(fogColor, fogColor, fogColor, 1.0f);
 
     m_Direct3D->GetWorldMatrix(worldMatrix);
     m_Camera->GetViewMatrix(viewMatrix);
     m_Direct3D->GetProjectionMatrix(projectionMatrix);
 
-    worldMatrix = XMMatrixTranslation(0.0f, 1.5f, 0.0f);
+    worldMatrix = XMMatrixRotationY(rotation);
 
-    m_DisplayPlane->Render(m_Direct3D->GetDeviceContext());
+    m_Model->Render(m_Direct3D->GetDeviceContext());
 
-    result = m_TextureShader->Render(m_Direct3D->GetDeviceContext(), m_DisplayPlane->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_RenderTexture->GetShaderResourceView());
-    if (!result)
-    {
-        return false;
-    }
-
-    worldMatrix = XMMatrixTranslation(-1.5f, -1.5f, 0.0f);
-
-    m_DisplayPlane->Render(m_Direct3D->GetDeviceContext());
-
-    result = m_TextureShader->Render(m_Direct3D->GetDeviceContext(), m_DisplayPlane->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_RenderTexture->GetShaderResourceView());
-    if (!result)
-    {
-        return false;
-    }
-
-    worldMatrix = XMMatrixTranslation(1.5f, -1.5f, 0.0f);
-
-    m_DisplayPlane->Render(m_Direct3D->GetDeviceContext());
-
-    result = m_TextureShader->Render(m_Direct3D->GetDeviceContext(), m_DisplayPlane->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_RenderTexture->GetShaderResourceView());
+    result = m_FogShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture(), fogStart, fogEnd);
     if (!result)
     {
         return false;
     }
 
     m_Direct3D->EndScene();
-
-    return true;
-}
-
-bool ApplicationClass::RenderSceneToTexture(float rotation)
-{
-    XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
-    bool result;
-
-    m_RenderTexture->SetRenderTarget(m_Direct3D->GetDeviceContext());
-    m_RenderTexture->ClearRenderTarget(m_Direct3D->GetDeviceContext(), 0.0f, 0.5f, 1.0f, 1.0f);
-
-    m_Camera->SetPosition(0.0f, 0.0f, -5.0f);
-    m_Camera->Render();
-
-    m_Direct3D->GetWorldMatrix(worldMatrix);
-    m_Camera->GetViewMatrix(viewMatrix);
-    m_RenderTexture->GetProjectionMatrix(projectionMatrix);
-
-    worldMatrix = XMMatrixRotationY(rotation);
-
-    m_Model->Render(m_Direct3D->GetDeviceContext());
-
-    result = m_TextureShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture());
-    if (!result)
-    {
-        return false;
-    }
-
-    m_Direct3D->SetBackBufferRenderTarget();
-    m_Direct3D->ResetViewport();
 
     return true;
 }

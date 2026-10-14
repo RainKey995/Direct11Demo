@@ -102,6 +102,9 @@
     <ClInclude Include="DisplayPlaneClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FogShaderClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputClass.cpp">
@@ -194,6 +197,9 @@
     <ClCompile Include="DisplayPlaneClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FogShaderClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Engine\color.ps">
@@ -248,6 +254,12 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\Engine\specmap.ps">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Engine\fog.ps">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Engine\fog.vs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
