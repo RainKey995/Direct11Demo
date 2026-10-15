@@ -6,7 +6,7 @@ ApplicationClass::ApplicationClass()
     m_Direct3D = 0;
     m_Camera = 0;
     m_Model = 0;
-    m_ClipPlaneShader = 0;
+    m_TranslateShader = 0;
 }
 
 ApplicationClass::ApplicationClass(const ApplicationClass& other)
@@ -36,10 +36,10 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     }
 
     m_Camera = new CameraClass;
-    m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
+    m_Camera->SetPosition(0.0f, 0.0f, -5.0f);
     m_Camera->Render();
 
-    strcpy_s(modelFilename, "../Engine/data/cube.txt");
+    strcpy_s(modelFilename, "../Engine/data/square.txt");
     strcpy_s(textureFilename, "../Engine/data/stone01.tga");
 
     m_Model = new ModelClass;
@@ -51,12 +51,12 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
-    m_ClipPlaneShader = new ClipPlaneShaderClass;
+    m_TranslateShader = new TranslateShaderClass;
 
-    result = m_ClipPlaneShader->Initialize(m_Direct3D->GetDevice(), hwnd);
+    result = m_TranslateShader->Initialize(m_Direct3D->GetDevice(), hwnd);
     if (!result)
     {
-        MessageBox(hwnd, L"Could not initialize the clip plane shader object.", L"Error", MB_OK);
+        MessageBox(hwnd, L"Could not initialize the translate shader object.", L"Error", MB_OK);
         return false;
     }
 
@@ -65,11 +65,11 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 void ApplicationClass::Shutdown()
 {
-    if (m_ClipPlaneShader)
+    if (m_TranslateShader)
     {
-        m_ClipPlaneShader->Shutdown();
-        delete m_ClipPlaneShader;
-        m_ClipPlaneShader = 0;
+        m_TranslateShader->Shutdown();
+        delete m_TranslateShader;
+        m_TranslateShader = 0;
     }
 
     if (m_Model)
@@ -97,7 +97,7 @@ void ApplicationClass::Shutdown()
 
 bool ApplicationClass::Frame(InputClass* input)
 {
-    static float rotation = 0.0f;
+    static float textureTranslation = 0.0f;
     bool result;
 
     if (input->IsEscapePressed())
@@ -105,20 +105,13 @@ bool ApplicationClass::Frame(InputClass* input)
         return false;
     }
 
-    rotation -= 0.0174532925f * 0.25f;
-    if (rotation < 0.0f)
+    textureTranslation += 0.01f;
+    if (textureTranslation > 1.0f)
     {
-        rotation += 360.0f;
+        textureTranslation -= 1.0f;
     }
 
-    static float distance = 0.0f;
-    distance += 0.01f;
-    float z = -10.0f * abs(sin(distance));
-
-    m_Camera->SetPosition(0.0f, 0.0f, z);
-    m_Camera->Render();
-
-    result = Render(rotation);
+    result = Render(textureTranslation);
     if (!result)
     {
         return false;
@@ -127,13 +120,10 @@ bool ApplicationClass::Frame(InputClass* input)
     return true;
 }
 
-bool ApplicationClass::Render(float rotation)
+bool ApplicationClass::Render(float textureTranslation)
 {
     XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
-    XMFLOAT4 clipPlane;
     bool result;
-
-    clipPlane = XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f);
 
     m_Direct3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -141,11 +131,9 @@ bool ApplicationClass::Render(float rotation)
     m_Camera->GetViewMatrix(viewMatrix);
     m_Direct3D->GetProjectionMatrix(projectionMatrix);
 
-    worldMatrix = XMMatrixRotationY(rotation);
-
     m_Model->Render(m_Direct3D->GetDeviceContext());
 
-    result = m_ClipPlaneShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture(), clipPlane);
+    result = m_TranslateShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture(), textureTranslation);
     if (!result)
     {
         return false;

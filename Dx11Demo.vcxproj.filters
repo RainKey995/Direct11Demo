@@ -108,6 +108,9 @@
     <ClInclude Include="ClipPlaneShaderClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TranslateShaderClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputClass.cpp">
@@ -206,6 +209,9 @@
     <ClCompile Include="ClipPlaneShaderClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TranslateShaderClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Engine\color.ps">
@@ -272,6 +278,12 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\Engine\clipplane.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Engine\translate.ps">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Engine\translate.vs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

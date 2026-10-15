@@ -7,7 +7,7 @@
 #include "InputClass.h"
 #include "CameraClass.h"
 #include "ModelClass.h"
-#include "ClipPlaneShaderClass.h"
+#include "TranslateShaderClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -31,7 +31,7 @@ private:
     D3DClass* m_Direct3D;
     CameraClass* m_Camera;
     ModelClass* m_Model;
-    ClipPlaneShaderClass* m_ClipPlaneShader;
+    TranslateShaderClass* m_TranslateShader;
 };
 
 #endif // !_APPLICATIONCLASS_H_

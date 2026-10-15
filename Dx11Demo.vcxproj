@@ -162,6 +162,7 @@
     <ClInclude Include="TextureClass.h" />
     <ClInclude Include="TextureShaderClass.h" />
     <ClInclude Include="TimerClass.h" />
+    <ClInclude Include="TranslateShaderClass.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlphaMapShaderClass.cpp" />
@@ -196,6 +197,7 @@
     <ClCompile Include="TextureClass.cpp" />
     <ClCompile Include="TextureShaderClass.cpp" />
     <ClCompile Include="TimerClass.cpp" />
+    <ClCompile Include="TranslateShaderClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Engine\alphamap.ps" />
@@ -220,6 +222,8 @@
     <None Include="..\Engine\specmap.ps" />
     <None Include="..\Engine\texture.ps" />
     <None Include="..\Engine\texture.vs" />
+    <None Include="..\Engine\translate.ps" />
+    <None Include="..\Engine\translate.vs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Engine\cube.txt" />
