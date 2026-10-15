@@ -6,7 +6,7 @@ ApplicationClass::ApplicationClass()
     m_Direct3D = 0;
     m_Camera = 0;
     m_Model = 0;
-    m_FogShader = 0;
+    m_ClipPlaneShader = 0;
 }
 
 ApplicationClass::ApplicationClass(const ApplicationClass& other)
@@ -51,12 +51,12 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
         return false;
     }
 
-    m_FogShader = new FogShaderClass;
+    m_ClipPlaneShader = new ClipPlaneShaderClass;
 
-    result = m_FogShader->Initialize(m_Direct3D->GetDevice(), hwnd);
+    result = m_ClipPlaneShader->Initialize(m_Direct3D->GetDevice(), hwnd);
     if (!result)
     {
-        MessageBox(hwnd, L"Could not initialize the fog shader object.", L"Error", MB_OK);
+        MessageBox(hwnd, L"Could not initialize the clip plane shader object.", L"Error", MB_OK);
         return false;
     }
 
@@ -65,11 +65,11 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 void ApplicationClass::Shutdown()
 {
-    if (m_FogShader)
+    if (m_ClipPlaneShader)
     {
-        m_FogShader->Shutdown();
-        delete m_FogShader;
-        m_FogShader = 0;
+        m_ClipPlaneShader->Shutdown();
+        delete m_ClipPlaneShader;
+        m_ClipPlaneShader = 0;
     }
 
     if (m_Model)
@@ -130,14 +130,12 @@ bool ApplicationClass::Frame(InputClass* input)
 bool ApplicationClass::Render(float rotation)
 {
     XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
-    float fogColor, fogStart, fogEnd;
+    XMFLOAT4 clipPlane;
     bool result;
 
-    fogColor = 0.5f;
-    fogStart = 0.0f;
-    fogEnd = 10.0f;
+    clipPlane = XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f);
 
-    m_Direct3D->BeginScene(fogColor, fogColor, fogColor, 1.0f);
+    m_Direct3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
     m_Direct3D->GetWorldMatrix(worldMatrix);
     m_Camera->GetViewMatrix(viewMatrix);
@@ -147,7 +145,7 @@ bool ApplicationClass::Render(float rotation)
 
     m_Model->Render(m_Direct3D->GetDeviceContext());
 
-    result = m_FogShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture(), fogStart, fogEnd);
+    result = m_ClipPlaneShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture(), clipPlane);
     if (!result)
     {
         return false;

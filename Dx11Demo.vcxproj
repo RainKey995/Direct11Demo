@@ -135,6 +135,7 @@
     <ClInclude Include="ApplicationClass.h" />
     <ClInclude Include="BitmapClass.h" />
     <ClInclude Include="CameraClass.h" />
+    <ClInclude Include="ClipPlaneShaderClass.h" />
     <ClInclude Include="ColorShaderClass.h" />
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="DisplayPlaneClass.h" />
@@ -167,6 +168,7 @@
     <ClCompile Include="ApplicationClass.cpp" />
     <ClCompile Include="BitmapClass.cpp" />
     <ClCompile Include="CameraClass.cpp" />
+    <ClCompile Include="ClipPlaneShaderClass.cpp" />
     <ClCompile Include="ColorShaderClass.cpp" />
     <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="DisplayPlaneClass.cpp" />
@@ -198,6 +200,8 @@
   <ItemGroup>
     <None Include="..\Engine\alphamap.ps" />
     <None Include="..\Engine\alphamap.vs" />
+    <None Include="..\Engine\clipplane.ps" />
+    <None Include="..\Engine\clipplane.vs" />
     <None Include="..\Engine\color.ps" />
     <None Include="..\Engine\color.vs" />
     <None Include="..\Engine\fog.ps" />
