@@ -7,7 +7,8 @@
 #include "InputClass.h"
 #include "CameraClass.h"
 #include "ModelClass.h"
-#include "TranslateShaderClass.h"
+#include "TextureShaderClass.h"
+#include "TransparentShaderClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -25,13 +26,14 @@ public:
     bool Frame(InputClass* input);
 
 private:
-    bool Render(float rotation);
+    bool Render();
 
 private:
     D3DClass* m_Direct3D;
     CameraClass* m_Camera;
-    ModelClass* m_Model;
-    TranslateShaderClass* m_TranslateShader;
+    ModelClass* m_Model1, * m_Model2;
+    TextureShaderClass* m_TextureShader;
+    TransparentShaderClass* m_TransparentShader;
 };
 
 #endif // !_APPLICATIONCLASS_H_

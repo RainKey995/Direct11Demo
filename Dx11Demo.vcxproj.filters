@@ -111,6 +111,9 @@
     <ClInclude Include="TranslateShaderClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TransparentShaderClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="InputClass.cpp">
@@ -212,6 +215,9 @@
     <ClCompile Include="TranslateShaderClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TransparentShaderClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Engine\color.ps">
@@ -284,6 +290,12 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\Engine\translate.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Engine\transparent.ps">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Engine\transparent.vs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

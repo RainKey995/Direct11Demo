@@ -5,8 +5,10 @@ ApplicationClass::ApplicationClass()
 {
     m_Direct3D = 0;
     m_Camera = 0;
-    m_Model = 0;
-    m_TranslateShader = 0;
+    m_Model1 = 0;
+    m_Model2 = 0;
+    m_TextureShader = 0;
+    m_TransparentShader = 0;
 }
 
 ApplicationClass::ApplicationClass(const ApplicationClass& other)
@@ -19,7 +21,7 @@ ApplicationClass::~ApplicationClass()
 
 bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
-    char modelFilename[128], textureFilename[128];
+    char modelFilename[128], textureFilename1[128], textureFilename2[128];
     bool result;
 
     m_Direct3D = new D3DClass;
@@ -40,23 +42,37 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
     m_Camera->Render();
 
     strcpy_s(modelFilename, "../Engine/data/square.txt");
-    strcpy_s(textureFilename, "../Engine/data/stone01.tga");
+    strcpy_s(textureFilename1, "../Engine/data/dirt01.tga");
+    strcpy_s(textureFilename2, "../Engine/data/stone01.tga");
 
-    m_Model = new ModelClass;
-
-    result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), modelFilename, textureFilename);
+    m_Model1 = new ModelClass;
+    result = m_Model1->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), modelFilename, textureFilename1);
     if (!result)
     {
         MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
         return false;
     }
 
-    m_TranslateShader = new TranslateShaderClass;
-
-    result = m_TranslateShader->Initialize(m_Direct3D->GetDevice(), hwnd);
+    m_Model2 = new ModelClass;
+    result = m_Model2->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), modelFilename, textureFilename2);
     if (!result)
     {
-        MessageBox(hwnd, L"Could not initialize the translate shader object.", L"Error", MB_OK);
+        return false;
+    }
+
+    m_TextureShader = new TextureShaderClass;
+    result = m_TextureShader->Initialize(m_Direct3D->GetDevice(), hwnd);
+    if (!result)
+    {
+        MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
+        return false;
+    }
+
+    m_TransparentShader = new TransparentShaderClass;
+    result = m_TransparentShader->Initialize(m_Direct3D->GetDevice(), hwnd);
+    if (!result)
+    {
+        MessageBox(hwnd, L"Could not initialize the transparent shader object.", L"Error", MB_OK);
         return false;
     }
 
@@ -65,18 +81,25 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 void ApplicationClass::Shutdown()
 {
-    if (m_TranslateShader)
+    if (m_TransparentShader)
     {
-        m_TranslateShader->Shutdown();
-        delete m_TranslateShader;
-        m_TranslateShader = 0;
+        m_TransparentShader->Shutdown();
+        delete m_TransparentShader;
+        m_TransparentShader = 0;
     }
 
-    if (m_Model)
+    if (m_Model2)
     {
-        m_Model->Shutdown();
-        delete m_Model;
-        m_Model = 0;
+        m_Model2->Shutdown();
+        delete m_Model2;
+        m_Model2 = 0;
+    }
+
+    if (m_Model1)
+    {
+        m_Model1->Shutdown();
+        delete m_Model1;
+        m_Model1 = 0;
     }
 
     if (m_Camera)
@@ -97,7 +120,6 @@ void ApplicationClass::Shutdown()
 
 bool ApplicationClass::Frame(InputClass* input)
 {
-    static float textureTranslation = 0.0f;
     bool result;
 
     if (input->IsEscapePressed())
@@ -105,13 +127,7 @@ bool ApplicationClass::Frame(InputClass* input)
         return false;
     }
 
-    textureTranslation += 0.01f;
-    if (textureTranslation > 1.0f)
-    {
-        textureTranslation -= 1.0f;
-    }
-
-    result = Render(textureTranslation);
+    result = Render();
     if (!result)
     {
         return false;
@@ -120,10 +136,13 @@ bool ApplicationClass::Frame(InputClass* input)
     return true;
 }
 
-bool ApplicationClass::Render(float textureTranslation)
+bool ApplicationClass::Render()
 {
     XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
+    float blendAmount;
     bool result;
+
+    blendAmount = 0.5f;
 
     m_Direct3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -131,13 +150,33 @@ bool ApplicationClass::Render(float textureTranslation)
     m_Camera->GetViewMatrix(viewMatrix);
     m_Direct3D->GetProjectionMatrix(projectionMatrix);
 
-    m_Model->Render(m_Direct3D->GetDeviceContext());
+    static float z1 = 0.0f;
+    z1 -= 0.02f;
+    worldMatrix = XMMatrixTranslation(-0.25f, 0.0f, sin(z1));
 
-    result = m_TranslateShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture(), textureTranslation);
+    m_Model1->Render(m_Direct3D->GetDeviceContext());
+
+    result = m_TextureShader->Render(m_Direct3D->GetDeviceContext(), m_Model1->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model1->GetTexture());
     if (!result)
     {
         return false;
     }
+
+    static float z2 = 0.0f;
+    z2 += 0.02f;
+    worldMatrix = XMMatrixTranslation(0.25f, 0.0f, sin(z2));
+
+    m_Direct3D->EnableAlphaBlending();
+
+    m_Model2->Render(m_Direct3D->GetDeviceContext());
+
+    result = m_TransparentShader->Render(m_Direct3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model2->GetTexture(), blendAmount);
+    if (!result)
+    {
+        return false;
+    }
+
+    m_Direct3D->DisableAlphaBlending();
 
     m_Direct3D->EndScene();
 
